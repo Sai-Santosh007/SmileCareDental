@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import whiteningImg from '../assets/whitening.jpg';
-import bracesImg from '../assets/braces_transformation.png';
+import bracesImg from '../assets/braces_transformation.jpg';
 import implantsImg from '../assets/implant.jpg';
 import smileImg from '../assets/smile.jpg';
-import veneersImg from '../assets/veeners.png';
+import veneersImg from '../assets/veeners.jpg';
 import gumImg from '../assets/gum.jpg';
 
 const whitening = whiteningImg;
