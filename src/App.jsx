@@ -15,6 +15,7 @@ import WhatsAppButton from './components/WhatsAppButton';
 import Gallery from './components/Gallery';
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import Terms from "./components/Terms";
+import AdminDashboard from './pages/AdminDashboard';
 function HomePage() {
   return (
     <div className="min-h-screen bg-warm-white">
@@ -43,6 +44,7 @@ function App() {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<Terms />}/>
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </Router>
     </ErrorBoundary>
