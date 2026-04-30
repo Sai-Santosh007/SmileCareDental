@@ -93,12 +93,13 @@ const AdminDashboard = () => {
 
   // Format date to DD-MM-YYYY
   const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }).replace(/\//g, '-');
+    if (!dateStr) return "Invalid Date";
+
+    const parts = dateStr.split("-");
+    if (parts.length !== 3) return "Invalid Date";
+
+    const [year, month, day] = parts;
+    return `${day}-${month}-${year}`;
   };
 
   // Get status badge color
