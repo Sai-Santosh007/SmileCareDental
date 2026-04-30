@@ -300,13 +300,13 @@ const AdminDashboard = () => {
         {/* Appointments Display */}
         {!loading && !error && appointments && (
           <div className="space-y-8">
-            {Object.keys(appointments).length === 0 ? (
+            {Object.keys(appointments.grouped || {}).length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg shadow-sm">
                 <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500">No appointments found</p>
               </div>
             ) : (
-              Object.entries(appointments).map(([date, slots]) => {
+              Object.entries(appointments.grouped || {}).map(([date, slots]) => {
                 const hasAppointments = Object.keys(slots).some(
                   slot => slots[slot] && slots[slot].length > 0
                 );
