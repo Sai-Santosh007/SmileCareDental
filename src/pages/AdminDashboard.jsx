@@ -58,7 +58,7 @@ const AdminDashboard = () => {
     setError('');
 
     try {
-      const action = tab === 'upcoming' ? 'getNext10Days' : 'getAllRecords';
+      const action = tab === 'upcoming' ? 'getUpcoming' : 'getAllRecords';
       const response = await fetch(`${APPS_SCRIPT_URL}?action=${action}`);
       const result = await response.json();
 
