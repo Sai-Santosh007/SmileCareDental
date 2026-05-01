@@ -306,7 +306,9 @@ const AdminDashboard = () => {
                 <p className="text-gray-500">No appointments found</p>
               </div>
             ) : (
-              Object.entries(appointments.grouped || {}).map(([date, slots]) => {
+              Object.entries(appointments.grouped || {})
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([date, slots]) => {
                 const hasAppointments = Object.keys(slots).some(
                   slot => slots[slot] && slots[slot].length > 0
                 );
