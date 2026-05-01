@@ -13,6 +13,20 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addForm, setAddForm] = useState({
+    date: new Date().toISOString().split('T')[0],
+    timeSlot: '',
+    name: '',
+    phone: '',
+    email: '',
+    type: 'Offline',
+    status: 'Booked',
+    notes: ''
+  });
+  const [addLoading, setAddLoading] = useState(false);
+  const [addError, setAddError] = useState('');
+  const [addSuccess, setAddSuccess] = useState('');
 
   // Handle PIN input
   const handlePinDigit = (digit) => {
@@ -91,6 +105,52 @@ const AdminDashboard = () => {
   // Handle refresh
   const handleRefresh = () => {
     fetchAppointments(activeTab);
+  };
+
+  // Handle add patient
+  const handleAddPatient = async () => {
+    setAddError('');
+    setAddSuccess('');
+
+    if (!addForm.name || !addForm.phone || !addForm.date || !addForm.timeSlot) {
+      setAddError('Name, Phone, Date and Time Slot are required.');
+      return;
+    }
+
+    setAddLoading(true);
+    try {
+      const params = new URLSearchParams({
+        action: 'addOffline',
+        name: addForm.name,
+        phone: addForm.phone,
+        email: addForm.email || '',
+        date: addForm.date,
+        timeSlot: addForm.timeSlot,
+        type: addForm.type,
+        status: addForm.status,
+        notes: addForm.notes || ''
+      });
+
+      const response = await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`);
+      const result = await response.json();
+
+      if (result.success) {
+        setAddSuccess('Patient added successfully!');
+        setTimeout(() => {
+          setShowAddModal(false);
+          setAddForm({ date: new Date().toISOString().split('T')[0], timeSlot: '', name: '', phone: '', email: '', type: 'Offline', status: 'Booked', notes: '' });
+          setAddError('');
+          setAddSuccess('');
+          fetchAppointments(activeTab);
+        }, 1500);
+      } else {
+        setAddError(result.message || 'Failed to add patient.');
+      }
+    } catch (err) {
+      setAddError('Network error. Please try again.');
+    } finally {
+      setAddLoading(false);
+    }
   };
 
   // Format date to DD-MM-YYYY
@@ -231,13 +291,22 @@ const AdminDashboard = () => {
               </div>
               <h1 className="text-xl font-bold text-gray-900">Smile Care Admin</h1>
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="font-medium">Logout</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white transition-colors"
+              >
+                <Users className="w-4 h-4" />
+                <span className="font-medium">Add Patient</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="font-medium">Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -417,6 +486,169 @@ const AdminDashboard = () => {
           </div>
         )}
       </main>
+
+      {/* Add Patient Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-bold text-gray-900">Add Patient</h2>
+              <button
+                onClick={() => {
+                  setShowAddModal(false);
+                  setAddForm({ date: new Date().toISOString().split('T')[0], timeSlot: '', name: '', phone: '', email: '', type: 'Offline', status: 'Booked', notes: '' });
+                  setAddError('');
+                  setAddSuccess('');
+                }}
+                className="text-gray-400 hover:text-gray-600 text-xl font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="px-6 py-4 space-y-4">
+
+              {/* Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                <input
+                  type="date"
+                  value={addForm.date}
+                  onChange={(e) => setAddForm(f => ({ ...f, date: e.target.value }))}
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+                />
+              </div>
+
+              {/* Time Slot */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Time Slot *</label>
+                <select
+                  value={addForm.timeSlot}
+                  onChange={(e) => setAddForm(f => ({ ...f, timeSlot: e.target.value }))}
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+                >
+                  <option value="">Select a time slot</option>
+                  <option>9:00 AM - 10:00 AM</option>
+                  <option>10:00 AM - 11:00 AM</option>
+                  <option>11:00 AM - 12:00 PM</option>
+                  <option>2:00 PM - 3:00 PM</option>
+                  <option>3:00 PM - 4:00 PM</option>
+                  <option>4:00 PM - 5:00 PM</option>
+                  <option>5:00 PM - 6:00 PM</option>
+                </select>
+              </div>
+
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <input
+                  type="text"
+                  value={addForm.name}
+                  onChange={(e) => setAddForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Patient full name"
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+                />
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+                <input
+                  type="tel"
+                  value={addForm.phone}
+                  onChange={(e) => setAddForm(f => ({ ...f, phone: e.target.value }))}
+                  placeholder="10-digit phone number"
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={addForm.email}
+                  onChange={(e) => setAddForm(f => ({ ...f, email: e.target.value }))}
+                  placeholder="Optional"
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+                />
+              </div>
+
+              {/* Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                <select
+                  value={addForm.type}
+                  onChange={(e) => setAddForm(f => ({ ...f, type: e.target.value }))}
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+                >
+                  <option>Offline</option>
+                  <option>Online</option>
+                </select>
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={addForm.status}
+                  onChange={(e) => setAddForm(f => ({ ...f, status: e.target.value }))}
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+                >
+                  <option>Booked</option>
+                  <option>Confirmed</option>
+                  <option>Completed</option>
+                  <option>Cancelled</option>
+                </select>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <textarea
+                  value={addForm.notes}
+                  onChange={(e) => setAddForm(f => ({ ...f, notes: e.target.value }))}
+                  placeholder="Optional notes"
+                  rows={3}
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm resize-none"
+                />
+              </div>
+
+              {/* Error / Success */}
+              {addError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
+                  {addError}
+                </div>
+              )}
+              {addSuccess && (
+                <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-700">
+                  {addSuccess}
+                </div>
+              )}
+
+              {/* Submit */}
+              <button
+                onClick={handleAddPatient}
+                disabled={addLoading}
+                className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                {addLoading ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  'Add Patient'
+                )}
+              </button>
+
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
