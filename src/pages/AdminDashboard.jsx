@@ -12,6 +12,7 @@ const AdminDashboard = () => {
   const [appointments, setAppointments] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Handle PIN input
   const handlePinDigit = (digit) => {
@@ -45,6 +46,7 @@ const AdminDashboard = () => {
     setAppointments(null);
     setActiveTab('upcoming');
     setError('');
+    setSearchQuery('');
   };
 
   // Fetch appointments
@@ -246,7 +248,7 @@ const AdminDashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex gap-2 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
             <button
-              onClick={() => setActiveTab('upcoming')}
+              onClick={() => { setActiveTab('upcoming'); setSearchQuery(''); }}
               className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${
                 activeTab === 'upcoming'
                   ? 'bg-teal-100 text-teal-700'
@@ -256,7 +258,7 @@ const AdminDashboard = () => {
               Upcoming (10 Days)
             </button>
             <button
-              onClick={() => setActiveTab('all')}
+              onClick={() => { setActiveTab('all'); setSearchQuery(''); }}
               className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${
                 activeTab === 'all'
                   ? 'bg-teal-100 text-teal-700'
@@ -296,7 +298,16 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-
+        {/* Search Bar — All Records only */}
+        {activeTab === 'all' && !loading && !error && appointments && (
+          <div className="mb-6">
+            <input type="text" placeholder="Search by name, phone, or date (DD-MM-YYYY)"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+          />
+          </div>
+        )}
         {/* Appointments Display */}
         {!loading && !error && appointments && (
           <div className="space-y-8">
@@ -308,6 +319,18 @@ const AdminDashboard = () => {
             ) : (
               Object.entries(appointments.grouped || {})
                 .sort(([a], [b]) => a.localeCompare(b))
+                .filter(([date, slots]) => {
+                  if (activeTab !== 'all' || !searchQuery.trim()) return true;
+                  const q = searchQuery.trim().toLowerCase();
+                  const formattedDate = formatDate(date); // DD-MM-YYYY
+                  if (formattedDate.includes(q)) return true;
+                  return Object.values(slots).some(patients =>
+                    patients.some(p =>
+                      p.name?.toLowerCase().includes(q) ||
+                      String(p.phone).includes(q)
+                    )
+                  );
+                })
                 .map(([date, slots]) => {
                 const hasAppointments = Object.keys(slots).some(
                   slot => slots[slot] && slots[slot].length > 0
