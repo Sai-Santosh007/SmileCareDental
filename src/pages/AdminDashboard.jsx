@@ -199,8 +199,8 @@ const AdminDashboard = () => {
   // PIN Entry Screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center p-2 sm:p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-8 w-full max-w-sm sm:max-w-md mx-2 sm:mx-0">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-teal-600" />
@@ -210,11 +210,11 @@ const AdminDashboard = () => {
           </div>
 
           {/* PIN Display */}
-          <div className="flex justify-center gap-3 mb-6">
+          <div className="flex justify-center gap-2 sm:gap-3 mb-6">
             {[0, 1, 2, 3].map((i) => (
               <div
                 key={i}
-                className={`w-12 h-14 rounded-lg border-2 flex items-center justify-center text-2xl font-bold transition-all ${
+                className={`w-10 sm:w-12 h-12 sm:h-14 rounded-lg border-2 flex items-center justify-center text-xl sm:text-2xl font-bold transition-all ${
                   i < pin.length
                     ? 'border-teal-500 bg-teal-50 text-teal-700'
                     : 'border-gray-200 bg-gray-50 text-gray-300'
@@ -265,7 +265,7 @@ const AdminDashboard = () => {
               }`}
             >
               <Unlock className="w-4 h-4" />
-              Login
+              <span className="hidden sm:inline">Login</span>
             </button>
           </div>
 
@@ -294,17 +294,17 @@ const AdminDashboard = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowAddModal(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white transition-colors"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white transition-colors"
               >
                 <Users className="w-4 h-4" />
-                <span className="font-medium">Add Patient</span>
+                <span className="font-medium hidden sm:inline">Add Patient</span>
               </button>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="font-medium">Logout</span>
+                <span className="font-medium hidden sm:inline">Logout</span>
               </button>
             </div>
           </div>
@@ -312,23 +312,24 @@ const AdminDashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-6">
         {/* Tabs and Refresh */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <div className="flex gap-2 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="flex gap-1 sm:gap-2 bg-white rounded-lg p-1 shadow-sm border border-gray-200 overflow-x-auto">
             <button
               onClick={() => { setActiveTab('upcoming'); setSearchQuery(''); }}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${
+              className={`px-3 sm:px-4 py-2 rounded-md font-medium text-xs sm:text-sm transition-all whitespace-nowrap ${
                 activeTab === 'upcoming'
                   ? 'bg-teal-100 text-teal-700'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              Upcoming (10 Days)
+              <span className="sm:hidden">Upcoming</span>
+              <span className="hidden sm:inline">Upcoming (10 Days)</span>
             </button>
             <button
               onClick={() => { setActiveTab('all'); setSearchQuery(''); }}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${
+              className={`px-3 sm:px-4 py-2 rounded-md font-medium text-xs sm:text-sm transition-all whitespace-nowrap ${
                 activeTab === 'all'
                   ? 'bg-teal-100 text-teal-700'
                   : 'text-gray-600 hover:bg-gray-100'
@@ -341,10 +342,10 @@ const AdminDashboard = () => {
           <button
             onClick={handleRefresh}
             disabled={loading}
-            className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-50"
+            className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            <span className="font-medium text-sm">Refresh</span>
+            <span className="font-medium text-sm hidden sm:inline">Refresh</span>
           </button>
         </div>
 
@@ -369,11 +370,11 @@ const AdminDashboard = () => {
         )}
         {/* Search Bar — All Records only */}
         {activeTab === 'all' && !loading && !error && appointments && (
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <input type="text" placeholder="Search by name, phone, or date (DD-MM-YYYY)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
           />
           </div>
         )}
@@ -408,13 +409,13 @@ const AdminDashboard = () => {
                 return (
                   <div key={date} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     {/* Date Header */}
-                    <div className="bg-teal-50 border-b border-teal-100 px-6 py-4">
-                      <h2 className="text-xl font-bold text-teal-800">
+                    <div className="bg-teal-50 border-b border-teal-100 px-3 sm:px-6 py-3 sm:py-4">
+                      <h2 className="text-lg sm:text-xl font-bold text-teal-800">
                         {formatDate(date)}
                       </h2>
                     </div>
 
-                    <div className="p-6">
+                    <div className="p-3 sm:p-6">
                       {!hasAppointments ? (
                         <p className="text-gray-400 text-sm italic">No appointments</p>
                       ) : (
@@ -424,11 +425,11 @@ const AdminDashboard = () => {
                             const isFull = patients.length >= 5;
 
                             return (
-                              <div key={timeSlot} className="border-l-4 border-teal-300 pl-4">
+                              <div key={timeSlot} className="border-l-4 border-teal-300 pl-3 sm:pl-4">
                                 {/* Time Slot Header */}
-                                <div className="flex items-center gap-3 mb-3">
-                                  <Clock className="w-4 h-4 text-gray-500" />
-                                  <h3 className="text-base font-semibold text-gray-700">
+                                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
+                                  <Clock className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                                  <h3 className="text-sm sm:text-base font-semibold text-gray-700">
                                     {timeSlot}
                                   </h3>
                                   {isFull && (
@@ -436,8 +437,8 @@ const AdminDashboard = () => {
                                       FULL
                                     </span>
                                   )}
-                                  <span className="text-sm text-gray-500">
-                                    ({patients.length} patient{patients.length !== 1 ? 's' : ''})
+                                  <span className="text-xs sm:text-sm text-gray-500">
+                                    ({patients.length})
                                   </span>
                                 </div>
 
@@ -446,7 +447,7 @@ const AdminDashboard = () => {
                                   {patients.map((patient, index) => (
                                     <div
                                       key={index}
-                                      className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                                      className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow"
                                     >
                                       <div className="flex items-start justify-between mb-2">
                                         <div className="flex items-center gap-2">
